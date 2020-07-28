@@ -33,3 +33,7 @@ Linux:
  修改\xcraw\WebAliveScan\config.py可修改线程数等参数
  
  # Todo
+ 
+  对接子域名扫描
+  
+  对接fofa api查询
