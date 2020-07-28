@@ -22,8 +22,12 @@ Linux:
  
 # readme
 
- results.txt会生成在start.py同目录下
+ results.csv会生成在start.py同目录下
  
  修改task.py中参数可修改扫描参数
  
+ 默认为 webscan.py --target ip --port large --brute True
+ 
  具体参数见\xcraw\WebAliveScan\readme.md
+
+ 修改\xcraw\WebAliveScan\config.py可修改线程数等参数
