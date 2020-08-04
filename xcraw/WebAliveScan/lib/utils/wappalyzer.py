@@ -1,3 +1,4 @@
+# encoding: utf-8
 import re
 import json
 import config
@@ -17,20 +18,20 @@ class Wappalyzer(object):
         # self.categories = obj['categories']
         self.apps = obj['apps']
         for name, app in self.apps.items():
-            self._prepare_app(app)
-        self.url = ''
-        self.html = ''
-        self.headers = ''
-        self.scripts = ''
-        self.meta = ''
+            self.prepare_app(app)
+        # self.url = ''
+        # self.html = ''
+        # self.headers = ''
+        # self.scripts = ''
+        # self.meta = ''
 
-    def _prepare_app(self, app):
+    def prepare_app(self, app):
         """
         Normalize app data, preparing it for the detection phase.
         """
 
         # Ensure these keys' values are lists
-        for key in ['url', 'html', 'script', 'implies']:
+        for key in ['url', 'html', 'script']:
             value = app.get(key)
             if value is None:
                 app[key] = []
@@ -56,14 +57,14 @@ class Wappalyzer(object):
 
         # Prepare regular expression patterns
         for key in ['url', 'html', 'script']:
-            app[key] = [self._prepare_pattern(pattern) for pattern in app[key]]
+            app[key] = [self.prepare_pattern(pattern) for pattern in app[key]]
 
         for key in ['headers', 'meta']:
             obj = app[key]
             for name, pattern in obj.items():
-                obj[name] = self._prepare_pattern(obj[name])
+                obj[name] = self.prepare_pattern(obj[name])
 
-    def _prepare_pattern(self, pattern):
+    def prepare_pattern(self, pattern):
         """
         Strip out key:value pairs from the pattern and compile the regular
         expression.
@@ -76,37 +77,68 @@ class Wappalyzer(object):
             # http://stackoverflow.com/a/1845097/413622
             return re.compile(r'(?!x)x')
 
-    def _has_app(self, app):
+    def has_app(self, app, mode, response_info):
+        # if mode == "AND":
+        #     return True
         """
         Determine whether the web page matches the app signature.
         """
-        # Search the easiest things first and save the full-text search of the
-        # HTML for last
-
+        result = {}
+        if app['url']:
+            result['url'] = False
+        if app['headers']:
+            result['headers'] = False
+        if app['script']:
+            result['script'] = False
+        if app['meta']:
+            result['meta'] = False
+        if app['html']:
+            result['html'] = False
         for regex in app['url']:
-            if regex.search(self.url):
-                return True
+            if regex.search(response_info['url']):
+                result['url'] = True
+                break
 
         for name, regex in app['headers'].items():
-            if name in self.headers:
-                content = self.headers[name]
-                if regex.search(content):
-                    return True
+            if mode == 'AND':
+                if name in response_info['headers']:
+                    content = response_info['headers'].get(name)
+                    result['headers'] = True
+                    if not regex.search(content):
+                        result['headers'] = False
+                        break
+                else:
+                    result['headers'] = False
+            elif mode == 'OR':
+                if name in response_info['headers']:
+                    content = response_info['headers'].get(name)
+                    if regex.search(content):
+                        result['headers'] = True
+                        break
 
         for regex in app['script']:
-            for script in self.scripts:
+            for script in response_info['scripts']:
                 if regex.search(script):
-                    return True
+                    result['script'] = True
+                    break
 
         for name, regex in app['meta'].items():
-            if name in self.meta:
-                content = self.meta[name]
+            if name in response_info['meta']:
+                content = response_info['meta'][name]
                 if regex.search(content):
-                    return True
+                    result['meta'] = True
+                    break
 
         for regex in app['html']:
-            if regex.search(self.html):
-                return True
+            if regex.search(response_info['html']):
+                result['html'] = True
+                break
+        if (mode == 'OR') and (True in result.values()):
+            return True
+        elif (mode == 'AND') and (not (False in result.values())):
+            return True
+        else:
+            return False
 
     def _get_implied_apps(self, detected_apps):
         """
@@ -135,17 +167,31 @@ class Wappalyzer(object):
         Return a list of applications that can be detected on the web page.
         """
         detected_apps = {}
-        self.url = url
-        self.html = html
-        self.headers = headers
-        self.scripts = scripts
-        self.meta = meta
+        # self.url = url
+        # self.html = html
+        # self.headers = headers
+        # self.scripts = scripts
+        # self.meta = meta
+        response_info = {'url': url, 'html': html, 'headers': headers, 'scripts': scripts, 'meta': meta}
         for app_name, app in self.apps.items():
-            # print(app)
-            if self._has_app(app):
+            mode = 'AND' if app.get('mode') == 'AND' else 'OR'
+            if self.has_app(app, mode, response_info):
                 if app['cats'] not in detected_apps:
                     detected_apps[app['cats']] = [app_name]
                 else:
                     detected_apps[app['cats']].append(app_name)
         return detected_apps
 
+
+if __name__ == '__main__':
+    r = requests.get('http://39.96.113.106:9010/', verify=False)
+    soup = BeautifulSoup(r.text, "html.parser")
+    _scripts = [script['src'] for script in soup.findAll('script', src=True)]
+    _meta = {
+        meta['name'].lower():
+            meta['content'] for meta in soup.findAll(
+            'meta', attrs=dict(name=True, content=True))
+    }
+    w = Wappalyzer()
+    data = w.analyze(r.url, r.text, r.headers, _scripts, [])
+    print(data)
