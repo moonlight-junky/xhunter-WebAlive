@@ -9,11 +9,11 @@ CELERY_QUEUES = (
 CELERY_ROUTES = (
     [
         (
-            "xcraw.tasks.send_request",
+            "xalive.tasks.send_request",
             {"queue": "ascan", "routing_key": "ascan"},
         ),
         (
-            "xcraw.tasks.save_results",
+            "xalive.tasks.save_results",
             {"queue": "save", "routing_key": "save"},
         ),
     ],
@@ -28,5 +28,5 @@ CELERY_RESULT_SERIALIZER = "json"  # 读取任务结果序列化
 CELERY_TASK_RESULT_EXPIRES = 60 * 60 * 24  # 任务过期时间
 
 CELERY_IMPORTS = (     # 指定导入的任务模块,可以指定多个
-    'xcraw.tasks',
+    'xalive.tasks',
 )

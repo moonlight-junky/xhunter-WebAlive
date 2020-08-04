@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # tasks.py
-from xcraw.app import app
+from xalive.app import app
 from .config import WA_PATH, PY_PATH, RS_PATH
 import requests
 import os
@@ -27,9 +27,9 @@ def save_results(request):
 
 
 
-@app.task
+@app.task(time_limit=1800)
 def send_request(target):
-    cmd = [PY_PATH, WA_PATH, "--target",target,"--port", "large","--brute", "True"]
+    cmd = ["/root/xhunter-WebAlive/xalive/w.sh",target]
     print(cmd)
     try:
         output = subprocess.check_output(cmd)

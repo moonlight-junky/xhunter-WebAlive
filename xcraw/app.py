@@ -1,8 +1,8 @@
 from celery import Celery
 
-app = Celery("xcraw", include=["xcraw.tasks"])
+app = Celery("xalive", include=["xalive.tasks"])
 
-app.config_from_object("xcraw.setting")
+app.config_from_object("xalive.setting")
 
 if __name__ == "__main__":
     app.start()
