@@ -1,0 +1,96 @@
+{
+	"UEditor": {
+		"status": 200,
+		"headers": {
+			"Content-Type": "application/.*javascript"
+		},
+		"html": "window.UEDITOR_HOME_URL",
+		"mode": "AND",
+		"paths": [
+			"/static/common/lib/ueditor/ueditor.config.js", "/statics/modules/ueditor/ueditor.config.js", "/static/js/ueditor/ueditor.config.js", "/ueditor/ueditor.config.js"
+		]
+	},
+	"KindEditor": {
+		"status": 200,
+		"headers": {
+			"Content-Type": "application/.*javascript"
+		},
+		"html": "window.KindEditor",
+		"mode": "AND",
+		"paths": [
+			"/kindeditor/kindeditor-all.js", "/statics/modules/kindeditor/kindeditor-all.js", "/static/js/kindeditor/kindeditor-all.js", "/static/common/lib/kindeditor/kindeditor-all.js"
+		]
+	},
+	"Spring": {
+		"status": 200,
+		"headers": {
+			"Content-Type": "application/vnd.spring.*"
+		},
+		"mode": "AND",
+
+		"paths": ["/actuator", "/manage", "/management", "/env", "/appenv", "/api-docs", "/v2/api-docs", "/swagger-ui.html", "/api.html", "/sw/swagger-ui.html", "/api/swagger-ui.html", "/template/swagger-ui.html", "/spring-security-rest/api/swagger-ui.html", "/spring-security-oauth-resource/swagger-ui.html", "/mappings", "/actuator/mappings", "/metrics", "/actuator/metrics", "/beans", "/actuator/beans", "/configprops", "/actuator/configprops", "/auditevents", "/autoconfig", "/caches", "/conditions", "/docs", "/dump", "/flyway", "/health", "/heapdump", "/httptrace", "/info", "/intergrationgraph", "/jolokia", "/logfile", "/loggers", "/liquibase", "/prometheus", "/refresh", "/scheduledtasks", "/sessions", "/shutdown", "/trace", "/threaddump", "/actuator/auditevents", "/actuator/health", "/actuator/conditions", "/actuator/env", "/actuator/info", "/actuator/loggers", "/actuator/heapdump", "/actuator/threaddump", "/actuator/scheduledtasks", "/actuator/httptrace", "/actuator/jolokia", "/actuator/hystrix.stream", "/jolokia/list", "/monitor", "/actuator/trace", "/actuator/monitor", "/actuator/dump", "/actuator/autoconfig"]
+	},
+	"Swagger": {
+		"status": 200,
+		"headers": {
+			"Content-Type": "text/html"
+		},
+		"html": ["<title>Swagger UI</title>", "swagger-ui-wrap"],
+		"paths": ["/swagger-ui.html","/actuator/swagger-ui.html"],
+		"mode": "AND"
+	},
+	"PhpMyAdmin": {
+		"status": 200,
+		"headers": {
+			"Content-Type": "text/html"
+		},
+		"html": "<title>phpMyAdmin</title>",
+		"paths": ["/phpmyadmin/", "/PhpMyAdmin/"],
+		"mode": "AND"
+	},
+	"Solr": {
+		"status": 200,
+		"headers": {
+			"Content-Type": "text/html"
+		},
+		"html": ["solrAdminApp", "<title>Solr Admin</title>", "Apache SOLR"],
+		"paths": ["/solr/", "/Solr/"],
+		"mode": "AND"
+	},
+	"WebLogic": {
+		"status": 200,
+		"headers": {
+			"Content-Type": "text/html"
+		},
+		"html": ["WebLogic Server Administration Console", "console/login/bea_logo.gif"],
+		"paths": ["/console/login/LoginForm.jsp"],
+		"mode": "AND"
+	},
+	"Jboss": {
+		"status": 200,
+		"headers": {
+			"Content-Type": "text/html"
+		},
+		"html": ["Administration Console"],
+		"paths": ["/web-console/index.html", "/admin-console/index.html", "/jmx-console/index.html"],
+		"mode": "AND"
+	},
+	"Axis2": {
+		"status": 200,
+		"headers": {
+			"Content-Type": "text/html"
+		},
+		"html": ["axis2-web/css/axis-style.css", "Axis2 administration console"],
+		"paths": ["/axis2-admin/", "/services/listServices"],
+		"mode": "AND"
+	},
+	"后台系统": {
+		"status": 200,
+		"headers": {
+			"Content-Type": "text/html"
+		},
+		"html": ["管理(系统|平台|网站|后台)", "登陆(后台|系统|平台)", "(后台|系统|平台)(登录|注册)", "(系统|网站|后台|平台)管理"],
+		"paths": ["/", "/admin/", "/manage/", "/system/"],
+		"mode": "AND"
+	}
+}

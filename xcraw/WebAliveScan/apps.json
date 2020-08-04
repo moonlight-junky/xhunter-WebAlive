@@ -3411,6 +3411,30 @@
         "cats": "Application",
         "html": "Your JBoss Application Server",
         "website": "http://jboss.org"
+      },
+      "JeeSite": {
+        "cats": "Application",
+        "script": "common/jeesite.js",
+        "meta": {
+          "author": "http://jeesite.com/"
+        }
+      },
+      "Ueditor": {
+        "cats": "Application",
+        "script": "ueditor.config.js",
+        "html": "/ueditor/.*?/upload\\w*/"
+      },
+      "Kindeditor": {
+        "cats": "Application",
+        "script": "kindeditor-min.js"
+      },
+      "UPortal": {
+        "cats": "Application",
+        "html": "<script type=\"text/javascript\">\n\twindow.location.href=\"portal/login.action\";\n</script>"
+      },
+      "后台管理": {
+        "cats": "Application",
+        "html": ["管理(系统|平台|网站|后台)", "登陆(后台|系统|平台)", "(后台|系统|平台)(登录|注册)", "(系统|网站|后台|平台)管理"]
       }
     }
 }

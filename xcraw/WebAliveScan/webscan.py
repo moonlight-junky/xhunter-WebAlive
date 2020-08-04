@@ -12,14 +12,13 @@ class Program(object):
         wappalyzer = Wappalyzer()
         request = Request(target, port, output, wappalyzer)
         save_result(request.alive_path, ['url', 'title', 'status', 'size', 'server', 'language', 'application', 'frameworks', 'system'], request.alive_result_list)
-        output.resultOutput(f'Alive result save to: {request.alive_path}')
         if brute:
-            brute_result_list = []
-            output.newLine('')
-            for info in request.alive_result_list:
-                dirbrute = Dirbrute(info.get('url'), output, brute_result_list)
-                dirbrute.run()
-            save_result(request.brute_path, ['url', 'status', 'size'], brute_result_list)
+            output.bruteTarget(f'{len(request.alive_result_list)} Alive URL')
+            dirbrute = Dirbrute(request.alive_result_list, output, wappalyzer)
+            dirbrute.run()
+            save_result(request.brute_path, ['url', 'status', 'size'], dirbrute.brute_result_list)
+        output.resultOutput(f'\nAlive result save to: {request.alive_path}')
+        if brute:
             output.resultOutput(f'Brute result save to: {request.brute_path}')
 
 
