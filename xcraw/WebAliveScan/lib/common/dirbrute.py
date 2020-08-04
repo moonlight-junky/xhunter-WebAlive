@@ -1,78 +1,102 @@
-import requests
-import urllib3
-import rules
+# encoding: utf-8
 from concurrent.futures import ThreadPoolExecutor
+from gevent import pool, monkey, Timeout;
+
+monkey.patch_all()
+import urllib3
+import random
+import json
+import chardet
 from lib.utils.FileUtils import *
 from lib.utils.tools import *
+from urllib.parse import urlparse
+from os import path
+
 urllib3.disable_warnings()
 
 
 class Dirbrute:
-    def __init__(self, target, output, brute_result_list):
-        self.target = target
+    def __init__(self, alive_list, output, wappalyzer):
+        self.alive_list = alive_list
         self.output = output
-        self.output.bruteTarget(target)
-        self.all_rules = []
-        self.brute_result_list = brute_result_list
+        self.wappalyzer = wappalyzer
+        self.all_rules = self.get_all_rules()
+        self.scan_url_list = self.get_scan_url_list()
+        self.index = 1
+        self.total = len(self.scan_url_list)
+        self.brute_result_list = []
 
-    def format_url(self, path):
-        url = self.target
+    def format_url(self, url, p):
         if url.endswith('/'):
             url = url.strip('/')
-        if not path.startswith('/'):
-            path = '/' + path
-        return url + path
+        if not p.startswith('/'):
+            p = '/' + p
+        return url + p
 
-    def init_rules(self):
-        config_file_rules = rules.common_rules.get('config_file')
-        shell_scripts_rules = rules.common_rules.get('shell_scripts')
-        editor_rules = rules.common_rules.get('editor')
-        spring_rules = rules.common_rules.get('spring')
-        web_app_rules = rules.common_rules.get('web_app')
-        other_rules = rules.common_rules.get('other')
-        self.all_rules += config_file_rules
-        self.all_rules += shell_scripts_rules
-        self.all_rules += editor_rules
-        self.all_rules += spring_rules
-        self.all_rules += web_app_rules
-        self.all_rules += other_rules
+    def get_scan_url_list(self):
+        scan_url_list = []
+        for alive in self.alive_list:
+            for p, rule in self.all_rules:
+                if alive.get('redirect'):
+                    origin = urlparse(alive['url'])
+                    redirect = urlparse(alive['redirect'])
+                    if (origin.netloc == redirect.netloc) and (
+                            path.dirname(origin.path) != path.dirname(redirect.path)):
+                        redirect_url = path.dirname(alive['redirect']) + '/'
+                        scan_url_list.append({'url': self.format_url(redirect_url, p), 'rule': rule})
+                scan_url_list.append({'url': self.format_url(alive['url'], p), 'rule': rule})
+        return scan_url_list
 
-    def compare_rule(self, rule, response_status, response_html, response_content_type):
-        rule_status = [200, 206, rule.get('status')]
-        if rule.get('status') and (response_status not in rule_status):
-            return
-        if rule.get('tag') and (rule['tag'] not in response_html):
-            return
-        if rule.get('type_no') and (rule['type_no'] in response_content_type):
-            return
-        if rule.get('type') and (rule['type'] not in response_content_type):
-            return
-        return True
+    def get_all_rules(self):
+        all_rules = []
+        f = open(config.realpath.joinpath('rules.json'), encoding='utf-8')
+        rules = json.load(f)
+        for name, app in rules.items():
+            for p in app['paths']:
+                mode = 'AND' if app.get('mode') == 'AND' else 'OR'
+                rule = {'status': app.get('status'), 'headers': app.get('headers'), 'html': app.get('html'),
+                        'mode': mode, 'application': name}
+                self.wappalyzer.prepare_app(rule)
+                all_rules.append((p, rule))
+        return all_rules
 
-    def brute(self, rule):
-        user_agent = 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
-        headers = {'User-Agent': user_agent, 'Connection': 'Keep-Alive', 'Range': 'bytes=0-102400'}
-        url = self.format_url(rule['path'])
+    def brute(self, scan_url):
+        url = scan_url['url']
+        rule = scan_url['rule']
+        headers = {'Connection': 'Keep-Alive', 'Range': 'bytes=0-102400'}
         try:
-            r = requests.get(url, headers=headers, verify=False, timeout=3)
+            r, html = get(url, allow_redirects=False, fake=True)
+            if r.status_code in [206, rule.get('status')]:
+                status = r.status_code
+                size = FileUtils.sizeHuman(len(r.text)).strip()
+                response_info = {'url': url, 'html': html, 'headers': r.headers, 'scripts': '', 'meta': ''}
+                if self.wappalyzer.has_app(rule, rule['mode'], response_info):
+                    url_info = {'url': url, 'size': size, 'status': status, 'application': [rule['application']]}
+                    self.output.statusReport(url_info)
+                else:
+                    raise Exception
+                self.brute_result_list.append(url_info)
         except Exception as e:
             return e
-        size = FileUtils.sizeHuman(len(r.text))
-        response_status = r.status_code
-        response_html = r.text
-        response_content_type = r.headers['Content-Type']
-        for white_rule in rules.white_rules:
-            if self.compare_rule(white_rule, response_status, response_html, response_content_type):
-                self.output.statusReport(url, response_status, size)
-        if not self.compare_rule(rule, response_status, response_html, response_content_type):
+        finally:
+            self.output.lastPath(url, self.index, self.total)
+            self.index = self.index + 1
             return
-        url_info = {'url': url, 'status': response_status, 'size': size.strip()}
-        self.brute_result_list.append(url_info)
-        self.output.statusReport(url_info)
-        return [url, rule]
 
     def run(self):
-        self.init_rules()
-        with ThreadPoolExecutor(30) as pool:
-            for rule in self.all_rules:
-                pool.submit(self.brute, rule)
+        random.shuffle(self.scan_url_list)
+        # gevent_pool = pool.Pool(config.threads)
+        gevent_pool = pool.Pool(config.threads)
+        while self.scan_url_list:
+            tasks = [gevent_pool.spawn(self.brute, self.scan_url_list.pop())
+                     for i in range(len(self.scan_url_list[:config.threads * 10]))]
+            for task in tasks:
+                try:
+                    task.join(timeout=6)
+                except Exception as e:
+                    pass
+            del tasks
+        # random.shuffle(self.scan_url_list)
+        # with ThreadPoolExecutor(config.threads) as pool:
+        #     for scan_url in self.scan_url_list:
+        #         pool.submit(self.brute, scan_url)

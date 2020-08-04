@@ -145,14 +145,14 @@ class Output(object):
 
     def bruteTarget(self, target):
         config = Style.BRIGHT + Fore.YELLOW
-        config += '\nDirBrute Target: {0}\n'.format(Fore.CYAN + target + Fore.YELLOW)
+        config += '\nDirBrute: {0}\n'.format(Fore.CYAN + target + Fore.YELLOW)
         config += Style.RESET_ALL
 
         self.newLine(config)
 
     def resultOutput(self, _str):
         config = Style.BRIGHT + Fore.YELLOW
-        config += '\n{0}\n'.format(Fore.GREEN + _str + Style.RESET_ALL)
+        config += '{0}'.format(Fore.GREEN + _str + Style.RESET_ALL)
         config += Style.RESET_ALL
 
         self.newLine(config)
