@@ -21,11 +21,15 @@ for url in file.readlines():
     reslist.append(resobj.id)
     datalist.append(data)
     i+=1
-    if i == 9:
+    if i == 8:
         for l in range(i):
             res=AsyncResult(reslist[l])
-            result = res.get()
+            try:
+                result = res.get()
+            except:
+                continue
             print(datalist[l])
+            print(reslist[l])
             if result==None:
                 continue
             try:
