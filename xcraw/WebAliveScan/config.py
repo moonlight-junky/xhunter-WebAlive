@@ -43,13 +43,13 @@ ports = {'default': default_ports, 'small': small_ports,
          'medium': medium_ports, 'large': large_ports}
 
 # 忽略状态码配置
-ignore_status_code = [400,403,404,502,429,500,401,501,503,402,406,503,301,302]
+ignore_status_code = [400,403,404,502,429,500,401,501,402,406,503]
 # SSL配置
 verify_ssl = False
 # 重定向配置
-allow_redirects = False
+allow_redirects = True
 # 扫描线程
-threads = 100
+threads = 600
 # 延迟配置
 timeout = 5
 realpath = pathlib.Path(__file__).parent
