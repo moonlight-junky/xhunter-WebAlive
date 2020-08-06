@@ -4,6 +4,8 @@
 
 # Usage:
 
+注意: python版本需要是3.7/3.8
+
 windows:
 
  celery -A xcraw.app worker -n xcraw.%h -Q ascan -l info -P eventlet
