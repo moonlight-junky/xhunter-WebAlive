@@ -4,23 +4,19 @@
 
 # Usage:
 
-注意: python版本需要是3.7/3.8
-
-config.py与w.sh内的路径记得修改
-
 windows:
 
- celery -A xcraw.app worker -n xcraw.%h -Q ascan -l info -P eventlet
+ celery -A xalive.app worker -n xalive.%h -Q ascan -l info -P eventlet
  
- celery -A xcraw.app worker -n xcraw.%h -Q save -l info -P eventlet
+ celery -A xalive.app worker -n xalive.%h -Q save -l info -P eventlet
  
  python3 start.py
  
 Linux:
 
- celery -A xcraw.app worker -n xcraw.%h -Q ascan -l info
+ celery -A xalive.app worker -n xalive.%h -Q ascan -l info
  
- celery -A xcraw.app worker -n xcraw.%h -Q save -l info
+ celery -A xalive.app worker -n xalive.%h -Q save -l info
  
  python3 start.py
  
@@ -32,9 +28,9 @@ Linux:
  
  默认为 webscan.py --target ip --port large --brute True
  
- 具体参数见\xcraw\WebAliveScan\readme.md
+ 具体参数见\xalive\WebAliveScan\readme.md
 
- 修改\xcraw\WebAliveScan\config.py可修改线程数等参数
+ 修改\xalive\WebAliveScan\config.py可修改线程数等参数
  
  # Todo
  
