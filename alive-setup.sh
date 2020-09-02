@@ -23,5 +23,5 @@ apt-get install -yq --no-install-recommends \
     libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 \
     libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 libnss3
 
-python3.7 -m pip install -r ~/xhunter-WebAlive/requirement.txt
+python3.7 -m pip install -r ~/xhunter-WebAlive/requirements.txt
 chmod 777 ~/xhunter-WebAlive/xalive/w.sh
