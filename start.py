@@ -4,7 +4,7 @@ import time
 
 
 save_results.delay("url,title,status,size,server,language,application,frameworks,system")
-file = open("targets.txt")
+file = open("domain.txt")
 result = ''
 
 
@@ -27,9 +27,12 @@ for url in file.readlines():
         while flag == 0:
             time.sleep(1)
             for l in range(i):
-                if AsyncResult(reslist[l]).ready() == True:
-                    flag = 1
-                    break
+                try:
+                    if AsyncResult(reslist[l]).ready() == True:
+                        flag = 1
+                        break
+                except:
+                    pass
         #当有任务完成后退出循环
         res=AsyncResult(reslist[l])
         try:
@@ -52,8 +55,8 @@ for url in file.readlines():
         i = i-1
 
 for l in range(i):
-    res=AsyncResult(reslist[l])
     try:
+        res=AsyncResult(reslist[l])
         result = res.get()
             #获取返回值
     except:
