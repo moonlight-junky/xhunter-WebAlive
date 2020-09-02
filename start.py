@@ -4,7 +4,7 @@ import time
 
 
 save_results.delay("url,title,status,size,server,language,application,frameworks,system")
-file = open("domain.txt")
+file = open("targets.txt")
 result = ''
 
 
