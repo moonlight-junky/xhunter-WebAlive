@@ -19,9 +19,9 @@ CELERY_ROUTES = (
     ],
 )
 
-BROKER_URL = "redis://:RtshieldVPS@106.53.232.176:6179/0"  # 使用redis 作为消息代理
+BROKER_URL = ""  # 使用redis 作为消息代理
 
-CELERY_RESULT_BACKEND = "redis://:RtshieldVPS@106.53.232.176:6179/0"  # 任务结果存在Redis
+CELERY_RESULT_BACKEND = ""  # 任务结果存在Redis
 
 CELERY_RESULT_SERIALIZER = "json"  # 读取任务结果序列化
 
