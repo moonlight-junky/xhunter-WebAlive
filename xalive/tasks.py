@@ -26,12 +26,12 @@ def save_results(request):
 				f.write(sresults + '\n')
 			finally:
 				f.close()
-		else:
+		elif len(sresult) > 2:
 			try:
-				f = open('brute.csv','a')
-				f.write(sresults + '\n')
+				f1 = open('brute.csv','a')
+				f1.write(sresults + '\n')
 			finally:
-				f.close()
+				f1.close()
 	return True
 
 
@@ -52,8 +52,4 @@ def send_request(target):
 		next(f)
 		for line1 in f:
 			results += line1
-	if results:
-		try:
-			return results
-		except:
-			return None
+	return results
