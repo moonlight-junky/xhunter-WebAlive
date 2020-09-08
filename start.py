@@ -4,6 +4,7 @@ import time
 
 
 save_results.delay("url,title,status,size,server,language,application,frameworks,system")
+save_results.delay("url,status,size")
 file = open("targets.txt")
 result = ''
 
@@ -21,8 +22,8 @@ for url in file.readlines():
     reslist.append(resobj.id)
     datalist.append(data)
     i+=1
-    if i >= 5:
-        #扫描节点的数量+1
+    if i >= 1:
+        #扫描节点的数量
         flag = 0
         while flag == 0:
             time.sleep(1)
