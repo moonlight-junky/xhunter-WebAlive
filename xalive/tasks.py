@@ -35,21 +35,23 @@ def save_results(request):
 	return True
 
 
-@app.task(time_limit=1000)
+@app.task(time_limit=10000)
 def send_request(target):
-	cmd = ["/root/xhunter-WebAlive/xalive/w.sh",target]
-	print(cmd)
-	try:
-		output = subprocess.check_output(cmd)
-	except:
-		return None
+	target0 = target.split("\n")
 	results = ''
-	with open(RS_PATH + '/results/alive_results.csv') as file:
-		next(file)
-		for line in file:
-			results += line
-	with open(RS_PATH + '/results/brute_results.csv') as f:
-		next(f)
-		for line1 in f:
-			results += line1
+	for t0 in target0:
+		cmd = ["/root/xhunter-WebAlive/xalive/w.sh",t0]
+		print(cmd)
+		try:
+			output = subprocess.check_output(cmd)
+		except:
+			return None
+		with open(RS_PATH + '/results/alive_results.csv') as file:
+			next(file)
+			for line in file:
+				results += line
+		with open(RS_PATH + '/results/brute_results.csv') as f:
+			next(f)
+			for line1 in f:
+				results += line1
 	return results
