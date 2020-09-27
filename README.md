@@ -22,6 +22,8 @@ Linux:
  
 # readme
 
+使用时需修改start.py中节点的值，十一结束后有空会写具体分布式搭建与使用方式
+
  results.csv会生成在start.py同目录下
  
  修改task.py中参数可修改扫描参数
