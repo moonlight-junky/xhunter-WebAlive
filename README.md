@@ -14,9 +14,9 @@ windows:
  
 Linux:
 
- celery -A xalive.app worker -n xalive.%h -Q ascan -l info
+ celery -A xalive.app worker -n xalive.%h -Q ascan -l info -Ofair
  
- celery -A xalive.app worker -n xalive.%h -Q save -l info
+ celery -A xalive.app worker -n xalive.%h -Q save -l info -Ofair
  
  python3 start.py
  
